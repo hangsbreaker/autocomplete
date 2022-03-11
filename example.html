@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../bootststrap5/css/bootstrap.min.css" rel="stylesheet">
+  <link href="autocomplete.css" rel="stylesheet">
+  <script src="jquery.1.12.4.min.js"></script>
+  <script src="autocomplete.js"></script>
+</head>
+
+<body>
+  <input id="myInput" type="text" class="form-control" name="myCountry" placeholder="Country">
+  <br>
+  <input type="text" id="kdres" placeholder="Response ID" />
+  <br>
+  <br>
+  <input id="myInputAjax" type="text" class="form-control" name="myCountry" placeholder="Country">
+  <script>
+    /*An array containing all the country names in the world:*/
+    var countries = [["1", "Afghanistan"], ["2", "Albania"], ["3", "Algeria"], ["4", "Andorra"], ["5", "Angola"], ["6", "Anguilla"], ["7", "Antigua & Barbuda"], ["1", "Afghanistan"], ["2", "Albania"], ["3", "Algeria"], ["4", "Andorra"], ["5", "Angola"], ["6", "Anguilla"], ["7", "Antigua & Barbuda"], ["1", "Afghanistan"], ["2", "Albania"], ["3", "Algeria"], ["4", "Andorra"], ["5", "Angola"], ["6", "Anguilla"], ["7", "Antigua & Barbuda"]];
+
+    /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+    autocomplete("myInput", countries, "kdres");
+
+    var param = { "type": "post", "url": "res_arr.php" };
+    autocomplete("myInputAjax", param, "kdres");
+  </script>
+
+</body>
+
+</html>
