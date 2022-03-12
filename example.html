@@ -3,9 +3,8 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="../bootststrap5/css/bootstrap.min.css" rel="stylesheet">
+  <link href="bootststrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="autocomplete.css" rel="stylesheet">
-  <script src="jquery.1.12.4.min.js"></script>
   <script src="autocomplete.js"></script>
 </head>
 
@@ -23,7 +22,7 @@
     /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
     autocomplete("myInput", countries, "kdres");
 
-    var param = { "type": "post", "url": "res_arr.php" };
+    var param = { "type": "post", "url": "http://localhost/res_arr.php" };
     autocomplete("myInputAjax", param, "kdres");
   </script>
 
