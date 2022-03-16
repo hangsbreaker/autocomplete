@@ -1,7 +1,7 @@
 function autocomplete(inpt, arr, inptres = null) {
   var inp = document.getElementById(inpt);
   inp.setAttribute("autocomplete", "off");
-  if (inptres != null) {
+  if (inptres != null && inptres != "multiple") {
     var inpres = document.getElementById(inptres);
   }
   inp.insertAdjacentHTML(
@@ -66,7 +66,12 @@ function autocomplete(inpt, arr, inptres = null) {
   });
   function getfromsrv(me, arr) {
     let type = arr.type.toLowerCase();
-    let url = type == "get" ? arr.url + "?keyword=" + me.value : arr.url;
+
+    let val = me.value.trim();
+    let comm = val.split(",");
+    val = comm[comm.length - 1].trim();
+
+    let url = type == "get" ? arr.url + "?keyword=" + val : arr.url;
     wrapauto.innerHTML = '<div class="autoloading">Loading...</div>';
 
     var http = new XMLHttpRequest();
@@ -78,7 +83,7 @@ function autocomplete(inpt, arr, inptres = null) {
         loadinput(me, data);
       }
     };
-    http.send("keyword=" + me.value);
+    http.send("keyword=" + val);
   }
   function addActive(x) {
     if (!x) return false;
@@ -105,7 +110,10 @@ function autocomplete(inpt, arr, inptres = null) {
     let a,
       b,
       i,
-      val = me.value;
+      val = me.value.trim();
+
+    let comm = val.split(",");
+    val = comm[comm.length - 1].trim();
     closeAllLists();
     currentFocus = -1;
     a = document.createElement("DIV");
@@ -131,9 +139,20 @@ function autocomplete(inpt, arr, inptres = null) {
           b.innerHTML += "<input type='hidden' value='" + arr[i][0] + "'>";
           b.innerHTML += "<input type='hidden' value='" + arr[i][1] + "'>";
           b.addEventListener("click", function (e) {
-            inp.value = this.getElementsByTagName("input")[1].value;
-            if (inpres != null) {
-              inpres.value = this.getElementsByTagName("input")[0].value;
+            if (inptres != null) {
+              if (inptres == "multiple") {
+                let noi = inp.value.indexOf(val);
+                inp.value =
+                  inp.value.substring(0, noi) +
+                  this.getElementsByTagName("input")[0].value +
+                  ", ";
+              } else {
+                inpres.value = this.getElementsByTagName("input")[0].value;
+              }
+            }
+
+            if (inptres != "multiple") {
+              inp.value = this.getElementsByTagName("input")[1].value;
             }
             closeAllLists();
           });
