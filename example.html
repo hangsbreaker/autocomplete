@@ -15,6 +15,7 @@
   <br>
   <br>
   <input id="myInputAjax" type="text" class="form-control" name="myCountry" placeholder="Country">
+  <textarea id="multiinput" type="text" class="form-control" name="myCountry" placeholder="Country"></textarea>
   <script>
     /*An array containing all the country names in the world:*/
     var countries = [["1", "Afghanistan"], ["2", "Albania"], ["3", "Algeria"], ["4", "Andorra"], ["5", "Angola"], ["6", "Anguilla"], ["7", "Antigua & Barbuda"], ["1", "Afghanistan"], ["2", "Albania"], ["3", "Algeria"], ["4", "Andorra"], ["5", "Angola"], ["6", "Anguilla"], ["7", "Antigua & Barbuda"], ["1", "Afghanistan"], ["2", "Albania"], ["3", "Algeria"], ["4", "Andorra"], ["5", "Angola"], ["6", "Anguilla"], ["7", "Antigua & Barbuda"]];
@@ -24,6 +25,7 @@
 
     var param = { "type": "post", "url": "http://localhost/res_arr.php" };
     autocomplete("myInputAjax", param, "kdres");
+    autocomplete("multiinput", countries, "multiple");
   </script>
 
 </body>
