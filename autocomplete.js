@@ -1,8 +1,17 @@
-function autocomplete(inpt, arr, inptres = null) {
+function autocomplete(inpt, params = {}) {
+  params.target = "target" in params ? params.target : "";
+  params.data = "data" in params ? params.data : [];
+  params.url = "url" in params ? params.url : "";
+  params.type = "type" in params ? params.type : "";
+  params.multiple = "multiple" in params ? params.multiple : false;
+  params.required = "required" in params ? params.required : false;
+
+  var arr = params.data;
+  var stsclick = false;
   var inp = document.getElementById(inpt);
   inp.setAttribute("autocomplete", "off");
-  if (inptres != null && inptres != "multiple") {
-    var inpres = document.getElementById(inptres);
+  if (params.target != null && params.target != "multiple") {
+    var inpres = document.getElementById(params.target);
   }
   inp.insertAdjacentHTML(
     "afterEnd",
@@ -15,18 +24,18 @@ function autocomplete(inpt, arr, inptres = null) {
   var ncofus = 0;
   inp.addEventListener("input", function (e) {
     let me = this;
-    if ("type" in arr && "url" in arr) {
+    if (params.type != "" && params.url != "") {
       getfromsrv(me, arr);
     } else {
-      loadinput(this, arr);
+      loadinput(me, arr);
     }
   });
   inp.addEventListener("click", function (e) {
     let me = this;
-    if ("type" in arr && "url" in arr) {
+    if (params.type != "" && params.url != "") {
       getfromsrv(me, arr);
     } else {
-      loadinput(this, arr);
+      loadinput(me, arr);
     }
   });
   inp.addEventListener("keydown", function (e) {
@@ -65,13 +74,13 @@ function autocomplete(inpt, arr, inptres = null) {
     }
   });
   function getfromsrv(me, arr) {
-    let type = arr.type.toLowerCase();
+    let type = params.type.toLowerCase();
 
     let val = me.value.trim();
     let comm = val.split(",");
     val = comm[comm.length - 1].trim();
 
-    let url = type == "get" ? arr.url + "?keyword=" + val : arr.url;
+    let url = type == "get" ? params.url + "?keyword=" + val : params.url;
     wrapauto.innerHTML = '<div class="autoloading">Loading...</div>';
 
     var http = new XMLHttpRequest();
@@ -98,19 +107,16 @@ function autocomplete(inpt, arr, inptres = null) {
     }
   }
   function closeAllLists(elmnt) {
-    var x = document.getElementsByClassName("autocomplete-items");
-    for (var i = 0; i < x.length; i++) {
-      if (elmnt != x[i] && elmnt != inp) {
-        x[i].parentNode.removeChild(x[i]);
-      }
+    if (elmnt != inp) {
+      wrapauto.innerHTML = "";
     }
-    wrapauto.innerHTML = "";
   }
   function loadinput(me, arr) {
     let a,
       b,
       i,
       val = me.value.trim();
+    stsclick = false;
 
     let comm = val.split(",");
     val = comm[comm.length - 1].trim();
@@ -120,48 +126,61 @@ function autocomplete(inpt, arr, inptres = null) {
     a.setAttribute("id", me.id + "autocomplete-list");
     a.setAttribute("class", "autocomplete-items");
     wrapauto.appendChild(a);
+    let k,
+      r = "";
     for (i = 0; i < arr.length; i++) {
-      if (arr[i][1] !== undefined) {
-        let key = val.toLowerCase();
-        let text = arr[i][1].toLowerCase();
-        let fnd = text.indexOf(key);
-        let t = arr[i][1].substr(fnd, key.length);
-        let words =
-          arr[i][1].substr(0, fnd) +
-          "<strong>" +
-          t +
-          "</strong>" +
-          arr[i][1].substr(fnd + key.length, arr[i][1].length);
+      if (arr[i].length == 2) {
+        k = arr[i][0];
+        r = arr[i][1];
+      } else {
+        k = arr[i];
+        r = arr[i];
+      }
+      let key = val.toLowerCase();
+      let text = r.toLowerCase();
+      let fnd = text.indexOf(key);
+      let t = r.substr(fnd, key.length);
+      let words =
+        r.substr(0, fnd) +
+        (t != "" ? "<strong>" + t + "</strong>" : "") +
+        r.substr(fnd + key.length, r.length);
 
-        if (t.toLowerCase() == key) {
-          b = document.createElement("DIV");
-          b.innerHTML = words;
-          b.innerHTML += "<input type='hidden' value='" + arr[i][0] + "'>";
-          b.innerHTML += "<input type='hidden' value='" + arr[i][1] + "'>";
-          b.addEventListener("click", function (e) {
-            if (inptres != null) {
-              if (inptres == "multiple") {
-                let noi = inp.value.indexOf(val);
-                inp.value =
-                  inp.value.substring(0, noi) +
-                  this.getElementsByTagName("input")[0].value +
-                  ", ";
-              } else {
-                inpres.value = this.getElementsByTagName("input")[0].value;
-              }
+      if (t.toLowerCase() == key && text != key) {
+        b = document.createElement("DIV");
+        b.innerHTML = words;
+        b.innerHTML += "<input type='hidden' value='" + k + "'>";
+        b.innerHTML += "<input type='hidden' value='" + htmlEntities(r) + "'>";
+        b.addEventListener("click", function (e) {
+          if (params.multiple) {
+            inp.value =
+              inp.value.substring(0, inp.value.length - val.length) +
+              this.getElementsByTagName("input")[0].value +
+              ", ";
+          } else {
+            inp.value = this.getElementsByTagName("input")[1].value;
+            if (params.target != "") {
+              inpres.value = this.getElementsByTagName("input")[0].value;
+            } else {
+              inp.value = this.getElementsByTagName("input")[0].value;
             }
-
-            if (inptres != "multiple") {
-              inp.value = this.getElementsByTagName("input")[1].value;
-            }
-            closeAllLists();
-          });
-          a.appendChild(b);
-        }
+          }
+          stsclick = true;
+          closeAllLists();
+        });
+        a.appendChild(b);
       }
     }
   }
+  function htmlEntities(rawStr) {
+    var encodedStr = rawStr.replace(/[\u00A0-\u9999<>\&]/g, function (i) {
+      return "&#" + i.charCodeAt(0) + ";";
+    });
+    return encodedStr;
+  }
   document.addEventListener("click", function (e) {
     closeAllLists(e.target);
+    if (params.required && !stsclick) {
+      inp.value = "";
+    }
   });
 }
