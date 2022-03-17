@@ -1,4 +1,5 @@
 function autocomplete(inpt, params = {}) {
+  params.minInput = "minInput" in params ? params.minInput : 0;
   params.target = "target" in params ? params.target : "";
   params.data = "data" in params ? params.data : [];
   params.url = "url" in params ? params.url : "";
@@ -117,57 +118,59 @@ function autocomplete(inpt, params = {}) {
       i,
       val = me.value.trim();
     stsclick = false;
+    if (val.length >= params.minInput) {
+      let comm = val.split(",");
+      val = comm[comm.length - 1].trim();
+      closeAllLists();
+      currentFocus = -1;
+      a = document.createElement("DIV");
+      a.setAttribute("id", me.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      wrapauto.appendChild(a);
+      let k,
+        r = "";
+      for (i = 0; i < arr.length; i++) {
+        if (arr[i].length == 2) {
+          k = arr[i][0];
+          r = arr[i][1];
+        } else {
+          k = arr[i];
+          r = arr[i];
+        }
+        let key = val.toLowerCase();
+        let text = r.toLowerCase();
+        let fnd = text.indexOf(key);
+        let t = r.substr(fnd, key.length);
+        let words =
+          r.substr(0, fnd) +
+          (t != "" ? "<strong>" + t + "</strong>" : "") +
+          r.substr(fnd + key.length, r.length);
 
-    let comm = val.split(",");
-    val = comm[comm.length - 1].trim();
-    closeAllLists();
-    currentFocus = -1;
-    a = document.createElement("DIV");
-    a.setAttribute("id", me.id + "autocomplete-list");
-    a.setAttribute("class", "autocomplete-items");
-    wrapauto.appendChild(a);
-    let k,
-      r = "";
-    for (i = 0; i < arr.length; i++) {
-      if (arr[i].length == 2) {
-        k = arr[i][0];
-        r = arr[i][1];
-      } else {
-        k = arr[i];
-        r = arr[i];
-      }
-      let key = val.toLowerCase();
-      let text = r.toLowerCase();
-      let fnd = text.indexOf(key);
-      let t = r.substr(fnd, key.length);
-      let words =
-        r.substr(0, fnd) +
-        (t != "" ? "<strong>" + t + "</strong>" : "") +
-        r.substr(fnd + key.length, r.length);
-
-      if (t.toLowerCase() == key && text != key) {
-        b = document.createElement("DIV");
-        b.innerHTML = words;
-        b.innerHTML += "<input type='hidden' value='" + k + "'>";
-        b.innerHTML += "<input type='hidden' value='" + htmlEntities(r) + "'>";
-        b.addEventListener("click", function (e) {
-          if (params.multiple) {
-            inp.value =
-              inp.value.substring(0, inp.value.length - val.length) +
-              this.getElementsByTagName("input")[0].value +
-              ", ";
-          } else {
-            inp.value = this.getElementsByTagName("input")[1].value;
-            if (params.target != "") {
-              inpres.value = this.getElementsByTagName("input")[0].value;
+        if (t.toLowerCase() == key && text != key) {
+          b = document.createElement("DIV");
+          b.innerHTML = words;
+          b.innerHTML += "<input type='hidden' value='" + k + "'>";
+          b.innerHTML +=
+            "<input type='hidden' value='" + htmlEntities(r) + "'>";
+          b.addEventListener("click", function (e) {
+            if (params.multiple) {
+              inp.value =
+                inp.value.substring(0, inp.value.length - val.length) +
+                this.getElementsByTagName("input")[0].value +
+                ", ";
             } else {
-              inp.value = this.getElementsByTagName("input")[0].value;
+              inp.value = this.getElementsByTagName("input")[1].value;
+              if (params.target != "") {
+                inpres.value = this.getElementsByTagName("input")[0].value;
+              } else {
+                inp.value = this.getElementsByTagName("input")[0].value;
+              }
             }
-          }
-          stsclick = true;
-          closeAllLists();
-        });
-        a.appendChild(b);
+            stsclick = true;
+            closeAllLists();
+          });
+          a.appendChild(b);
+        }
       }
     }
   }
