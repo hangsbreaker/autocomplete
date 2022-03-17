@@ -5,3 +5,5 @@ More example in example.html
 <pre>autocomplete("id_input_text/textarea", [object], "id_input_target");</pre>
 Use third paramater with "multiple" to use multiple value
 <pre>autocomplete("id_input_text/textarea", [object], "multiple");</pre>
+<br><br>
+See <a href="https://hangsbreaker.github.io/autocomplete/" target="_blank">Demo</a>
