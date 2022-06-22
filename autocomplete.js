@@ -81,16 +81,23 @@ function autocomplete(inpt, params = {}) {
     let comm = val.split(",");
     val = comm[comm.length - 1].trim();
 
-    let url = type == "get" ? params.url + "?keyword=" + val : params.url;
     wrapauto.innerHTML = '<div class="autoloading">Loading...</div>';
 
     var http = new XMLHttpRequest();
-    http.open(type, url, true);
+    http.open(type, params.url, true);
     http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     http.onreadystatechange = function () {
       if (http.readyState == 4 && http.status === 200) {
-        let data = JSON.parse(http.responseText);
-        loadinput(me, data);
+        if (isJson(http.responseText)) {
+          let data = JSON.parse(http.responseText);
+          if (data != null) {
+            if (data.length > 0) {
+              loadinput(me, data);
+            }
+          }
+        } else {
+          console.log(http.responseText);
+        }
       }
     };
     http.send("keyword=" + val);
@@ -180,10 +187,21 @@ function autocomplete(inpt, params = {}) {
     });
     return encodedStr;
   }
+  function isJson(str) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
   document.addEventListener("click", function (e) {
     closeAllLists(e.target);
     if (params.required && !stsclick) {
       inp.value = "";
+      if (params.target != "") {
+        inpres.value = "";
+      }
     }
   });
 }
