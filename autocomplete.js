@@ -67,11 +67,9 @@ function autocomplete(inpt, params = {}) {
         ncofus = currentFocus;
         dvl.scrollTop = 35 * (arr.length - 1);
       }
-    } else if (e.keyCode == 13) {
+    } else if (e.keyCode == 13 && currentFocus > -1) {
       e.preventDefault();
-      if (currentFocus > -1) {
-        if (x) x[currentFocus].click();
-      }
+      if (x) x[currentFocus].click();
     }
   });
   function getfromsrv(me, arr) {
