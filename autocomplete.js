@@ -11,7 +11,11 @@ function autocomplete(inpt, params = {}) {
   var stsclick = false;
   var inp = document.getElementById(inpt);
   inp.setAttribute("autocomplete", "off");
-  if (params.target != null && params.target != "multiple") {
+  if (
+    params.target != null &&
+    params.target != "multiple" &&
+    typeof params.target != "function"
+  ) {
     var inpres = document.getElementById(params.target);
   }
   inp.insertAdjacentHTML(
@@ -67,9 +71,11 @@ function autocomplete(inpt, params = {}) {
         ncofus = currentFocus;
         dvl.scrollTop = 35 * (arr.length - 1);
       }
-    } else if (e.keyCode == 13 && currentFocus > -1) {
+    } else if (e.keyCode == 13) {
       e.preventDefault();
-      if (x) x[currentFocus].click();
+      if (currentFocus > -1) {
+        if (x) x[currentFocus].click();
+      }
     }
   });
   function getfromsrv(me, arr) {
@@ -91,7 +97,11 @@ function autocomplete(inpt, params = {}) {
           if (data != null) {
             if (data.length > 0) {
               loadinput(me, data);
+            } else {
+              wrapauto.innerHTML = "";
             }
+          } else {
+            wrapauto.innerHTML = "";
           }
         } else {
           console.log(http.responseText);
@@ -165,8 +175,14 @@ function autocomplete(inpt, params = {}) {
                 ", ";
             } else {
               inp.value = this.getElementsByTagName("input")[1].value;
-              if (params.target != "") {
+              if (params.target != "" && typeof params.target != "function") {
                 inpres.value = this.getElementsByTagName("input")[0].value;
+              } else if (typeof params.target == "function") {
+                let dts = [
+                  this.getElementsByTagName("input")[0].value,
+                  this.getElementsByTagName("input")[1].value,
+                ];
+                params.target(dts);
               } else {
                 inp.value = this.getElementsByTagName("input")[0].value;
               }
@@ -197,7 +213,7 @@ function autocomplete(inpt, params = {}) {
     closeAllLists(e.target);
     if (params.required && !stsclick) {
       inp.value = "";
-      if (params.target != "") {
+      if (params.target != "" && typeof params.target != "function") {
         inpres.value = "";
       }
     }
