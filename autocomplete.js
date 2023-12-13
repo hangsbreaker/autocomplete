@@ -4,6 +4,7 @@ function autocomplete(inpt, params = {}) {
   params.data = "data" in params ? params.data : [];
   params.url = "url" in params ? params.url : "";
   params.type = "type" in params ? params.type : "";
+  params.value = "value" in params ? params.value : "";
   params.multiple = "multiple" in params ? params.multiple : false;
   params.required = "required" in params ? params.required : false;
 
@@ -11,6 +12,9 @@ function autocomplete(inpt, params = {}) {
   var stsclick = false;
   var inp = document.getElementById(inpt);
   inp.setAttribute("autocomplete", "off");
+  if(params.value != "") {
+    inp.value = params.value;
+  }
   if (
     params.target != null &&
     params.target != "multiple" &&
@@ -211,7 +215,7 @@ function autocomplete(inpt, params = {}) {
   }
   document.addEventListener("click", function (e) {
     closeAllLists(e.target);
-    if (params.required && !stsclick) {
+    if (params.required && !stsclick && param.value == "") {
       inp.value = "";
       if (params.target != "" && typeof params.target != "function") {
         inpres.value = "";
